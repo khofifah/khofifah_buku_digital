@@ -10,7 +10,9 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^0.1.2
   pie_chart: ^3.1.1
-
+  video_player: ^0.10.11+1
+  video_thumbnail: ^0.2.1
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter

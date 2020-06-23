@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:khofifah_buku_digital/model/Mapel.dart';
 import 'package:pie_chart/pie_chart.dart';
-
+import 'package:video_player/video_player.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -16,7 +15,7 @@ class MyApp extends StatelessWidget {
       home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
-}
+} 
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -27,6 +26,73 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  VideoPlayerController playerController;
+  VoidCallback listener;
+  int _menuTab, _childTab;
+
+  @override
+  void initState() {
+    print("menutab" + _menuTab.toString());
+    super.initState();
+    _menuTab = 0;
+    _childTab = 0;
+    listener = () {
+      setState(() {});
+    };
+  }
+
+  void createVideo() {
+    if (playerController == null) {
+      playerController = VideoPlayerController.network(
+          "https://www.youtube.com/watch?v=KWmo9r0hnM8")
+        ..addListener(listener)
+        ..setVolume(1.0)
+        ..initialize()
+        ..play();
+    } else {
+      if (playerController.value.isPlaying) {
+        playerController.pause();
+      } else {
+        playerController.initialize();
+        playerController.play();
+      }
+    }
+  }
+
+  @override
+  void deactivate() {
+    playerController.setVolume(0.0);
+    playerController.removeListener(listener);
+    super.deactivate();
+  }
+
+  Future<void> _showMyDialog(mapel) async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(mapel),
+        content: SingleChildScrollView(
+          child: ListBody(
+            children: <Widget>[
+              Text('Belajar Terakhir'),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          FlatButton(
+            child: Text('OK'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
   @override
   Widget build(BuildContext context) {
   double width = MediaQuery.of(context).size.width;
@@ -36,7 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
   dataMap.putIfAbsent("Biologi", () => 80);
   dataMap.putIfAbsent("Fisika", () => 70);
   dataMap.putIfAbsent("Kimia", () => 60);
-
+ 
     return Scaffold(
       appBar: AppBar(
         leading: Icon(Icons.menu),
@@ -198,32 +264,218 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                margin: EdgeInsets.symmetric(vertical: 20.0),
+                height: 100.0,
+                alignment: Alignment.center,
+                child: ListView(
+                  padding: EdgeInsets.symmetric(horizontal: 15),
+                  scrollDirection: Axis.horizontal,
                   children: <Widget>[
-                    Expanded(
+                    GestureDetector(
+                      onTap: () {
+                        createVideo();
+                        playerController.play();
+                      },
                       child: Container(
-                        padding: EdgeInsets.all(5),
-                        child: Icon(
-                          Icons.ondemand_video,
-                          size: 150,
-                          color: Color(0xFF363563),
+                        width: 150,
+                        height: 100,
+                        child: Center(
+                          child: AspectRatio(
+                            aspectRatio: 4 / 3,
+                            child: Container(
+                              child: (playerController != null
+                                  ? VideoPlayer(
+                                      playerController,
+                                    )
+                                  : Stack(
+                                      children: <Widget>[
+                                        Container(
+                                          decoration: new BoxDecoration(
+                                            borderRadius: const BorderRadius.all(const Radius.circular(15)),
+                                          ),
+                                          width: 150,
+                                          height: 100,
+                                          child: Image.network(
+                                            'https://img.youtube.com/vi/KWmo9r0hnM8/0.jpg',
+                                            fit: BoxFit.fill,
+                                          )
+                                        ),
+                                        Container(
+                                          alignment: Alignment.center,
+                                          decoration: new BoxDecoration(
+                                            borderRadius: const BorderRadius.all(const Radius.circular(15)),
+                                            color: new Color.fromRGBO(0, 0, 0, 0.5),
+                                          ),
+                                          width: 150,
+                                          height: 100,
+                                          child: Icon(
+                                            Icons.play_circle_outline,
+                                            size: 50,
+                                            color: Colors.white,
+                                          ),
+                                        )
+                                      ],
+                                    ))
+                            )
+                          )
                         ),
-                      )
+                      ),
                     ),
-                    Expanded(
+                    SizedBox(width: 15),
+                    GestureDetector(
+                      onTap: () {
+                        createVideo();
+                        playerController.play();
+                      },
                       child: Container(
-                        padding: EdgeInsets.all(5),
-                        child: Icon(
-                          Icons.ondemand_video,
-                          size: 150,
-                          color: Color(0xFF363563),
+                        width: 150,
+                        height: 100,
+                        child: Center(
+                          child: AspectRatio(
+                            aspectRatio: 4 / 3,
+                            child: Container(
+                              child: (playerController != null
+                                  ? VideoPlayer(
+                                      playerController,
+                                    )
+                                  : Stack(
+                                      children: <Widget>[
+                                        Container(
+                                          decoration: new BoxDecoration(
+                                            borderRadius: const BorderRadius.all(const Radius.circular(15)),
+                                          ),
+                                          width: 150,
+                                          height: 100,
+                                          child: Image.network(
+                                            'https://img.youtube.com/vi/KWmo9r0hnM8/0.jpg',
+                                            fit: BoxFit.fill,
+                                          )
+                                        ),
+                                        Container(
+                                          alignment: Alignment.center,
+                                          decoration: new BoxDecoration(
+                                            borderRadius: const BorderRadius.all(const Radius.circular(15)),
+                                            color: new Color.fromRGBO(0, 0, 0, 0.5),
+                                          ),
+                                          width: 150,
+                                          height: 100,
+                                          child: Icon(
+                                            Icons.play_circle_outline,
+                                            size: 50,
+                                            color: Colors.white,
+                                          ),
+                                        )
+                                      ],
+                                    ))
+                            )
+                          )
                         ),
-                      )
+                      ),
+                    ),
+                    SizedBox(width: 15),
+                    GestureDetector(
+                      onTap: () {
+                        createVideo();
+                        playerController.play();
+                      },
+                      child: Container(
+                        width: 150,
+                        height: 100,
+                        child: Center(
+                          child: AspectRatio(
+                            aspectRatio: 4 / 3,
+                            child: Container(
+                              child: (playerController != null
+                                  ? VideoPlayer(
+                                      playerController,
+                                    )
+                                  : Stack(
+                                      children: <Widget>[
+                                        Container(
+                                          decoration: new BoxDecoration(
+                                            borderRadius: const BorderRadius.all(const Radius.circular(15)),
+                                          ),
+                                          width: 150,
+                                          height: 100,
+                                          child: Image.network(
+                                            'https://img.youtube.com/vi/KWmo9r0hnM8/0.jpg',
+                                            fit: BoxFit.fill,
+                                          )
+                                        ),
+                                        Container(
+                                          alignment: Alignment.center,
+                                          decoration: new BoxDecoration(
+                                            borderRadius: const BorderRadius.all(const Radius.circular(15)),
+                                            color: new Color.fromRGBO(0, 0, 0, 0.5),
+                                          ),
+                                          width: 150,
+                                          height: 100,
+                                          child: Icon(
+                                            Icons.play_circle_outline,
+                                            size: 50,
+                                            color: Colors.white,
+                                          ),
+                                        )
+                                      ],
+                                    ))
+                            )
+                          )
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 15),
+                    GestureDetector(
+                      onTap: () {
+                        createVideo();
+                        playerController.play();
+                      },
+                      child: Container(
+                        width: 150,
+                        height: 100,
+                        child: Center(
+                          child: AspectRatio(
+                            aspectRatio: 4 / 3,
+                            child: Container(
+                              child: (playerController != null
+                                  ? VideoPlayer(
+                                      playerController,
+                                    )
+                                  : Stack(
+                                      children: <Widget>[
+                                        Container(
+                                          decoration: new BoxDecoration(
+                                            borderRadius: const BorderRadius.all(const Radius.circular(15)),
+                                          ),
+                                          width: 150,
+                                          height: 100,
+                                          child: Image.network(
+                                            'https://img.youtube.com/vi/KWmo9r0hnM8/0.jpg',
+                                            fit: BoxFit.fill,
+                                          )
+                                        ),
+                                        Container(
+                                          alignment: Alignment.center,
+                                          decoration: new BoxDecoration(
+                                            borderRadius: const BorderRadius.all(const Radius.circular(15)),
+                                            color: new Color.fromRGBO(0, 0, 0, 0.5),
+                                          ),
+                                          width: 150,
+                                          height: 100,
+                                          child: Icon(
+                                            Icons.play_circle_outline,
+                                            size: 50,
+                                            color: Colors.white,
+                                          ),
+                                        )
+                                      ],
+                                    ))
+                            )
+                          )
+                        ),
+                      ),
                     ),
                   ],
-                )
+                ),
               ),
               SizedBox(height: 15),
               Container(
@@ -378,163 +630,183 @@ class _MyHomePageState extends State<MyHomePage> {
                 padding: EdgeInsets.symmetric(horizontal: 15),
                 child: Column(
                   children: <Widget>[
-                    Container(
-                      padding: EdgeInsets.all(10),
-                      decoration  : new BoxDecoration(
-                        borderRadius:  BorderRadius.circular(10),
-                        border: Border.all(color: Colors.grey[350])
-                      ),  
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Icon(
-                            Icons.ondemand_video,
-                            size: 60,
-                            color: Colors.red[400],
-                          ),
-                          SizedBox(width: 10),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text(
-                                  "Matematika",                          
-                                  style: TextStyle(fontSize: 15)
-                                ),
-                                SizedBox(height: 5),
-                                Text(
-                                  "Bab 1 - Algoritma Dasar",                          
-                                  style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold)
-                                ),
-                                SizedBox(height: 5),
-                                Text(
-                                  "Terakhir dibuka pada, Senin 8 Juni 2020",                            
-                                  style: TextStyle(fontSize: 10, color: Colors.grey)
-                                ),
-                              ],
-                            )
-                          ),
-                        ],
+                    GestureDetector(
+                      onTap: () {
+                        _showMyDialog('Matematika');
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        decoration  : new BoxDecoration(
+                          borderRadius:  BorderRadius.circular(10),
+                          border: Border.all(color: Colors.grey[350])
+                        ),  
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(
+                              Icons.ondemand_video,
+                              size: 60,
+                              color: Colors.red[400],
+                            ),
+                            SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    "Matematika",                          
+                                    style: TextStyle(fontSize: 15)
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    "Bab 1 - Algoritma Dasar",                          
+                                    style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold)
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    "Terakhir dibuka pada, Senin 8 Juni 2020",                            
+                                    style: TextStyle(fontSize: 10, color: Colors.grey)
+                                  ),
+                                ],
+                              )
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     SizedBox(height: 15),
-                    Container(
-                      padding: EdgeInsets.all(10),
-                      decoration  : new BoxDecoration(
-                        borderRadius:  BorderRadius.circular(10),
-                        border: Border.all(color: Colors.grey[350])
-                      ),  
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Icon(
-                            Icons.mic,
-                            size: 60,
-                            color: Colors.red[400],
-                          ),
-                          SizedBox(width: 10),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text(
-                                  "Matematika",                          
-                                  style: TextStyle(fontSize: 15)
-                                ),
-                                SizedBox(height: 5),
-                                Text(
-                                  "Bab 1 - Algoritma Dasar",                          
-                                  style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold)
-                                ),
-                                SizedBox(height: 5),
-                                Text(
-                                  "Terakhir dibuka pada, Senin 8 Juni 2020",                          
-                                  style: TextStyle(fontSize: 10, color: Colors.grey)
-                                ),
-                              ],
-                            )
-                          ),
-                        ],
+                    GestureDetector(
+                      onTap: () {
+                        _showMyDialog('Matematika');
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        decoration  : new BoxDecoration(
+                          borderRadius:  BorderRadius.circular(10),
+                          border: Border.all(color: Colors.grey[350])
+                        ),  
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(
+                              Icons.mic,
+                              size: 60,
+                              color: Colors.red[400],
+                            ),
+                            SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    "Matematika",                          
+                                    style: TextStyle(fontSize: 15)
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    "Bab 1 - Algoritma Dasar",                          
+                                    style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold)
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    "Terakhir dibuka pada, Senin 8 Juni 2020",                          
+                                    style: TextStyle(fontSize: 10, color: Colors.grey)
+                                  ),
+                                ],
+                              )
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     SizedBox(height: 15),
-                    Container(
-                      padding: EdgeInsets.all(10),
-                      decoration  : new BoxDecoration(
-                        borderRadius:  BorderRadius.circular(10),
-                        border: Border.all(color: Colors.grey[350])
-                      ),  
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Icon(
-                            Icons.edit,
-                            size: 60,
-                            color: Colors.red[400],
-                          ),
-                          SizedBox(width: 10),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text(
-                                  "Matematika",                          
-                                  style: TextStyle(fontSize: 15)
-                                ),
-                                SizedBox(height: 5),
-                                Text(
-                                  "Bab 1 - Algoritma Dasar",                          
-                                  style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold)
-                                ),
-                                SizedBox(height: 5),
-                                Text(
-                                  "Terakhir dibuka pada, Senin 8 Juni 2020",                             
-                                  style: TextStyle(fontSize: 10, color: Colors.grey)
-                                ),
-                              ],
-                            )
-                          ),
-                        ],
+                    GestureDetector(
+                      onTap: () {
+                        _showMyDialog('Matematika');
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        decoration  : new BoxDecoration(
+                          borderRadius:  BorderRadius.circular(10),
+                          border: Border.all(color: Colors.grey[350])
+                        ),  
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(
+                              Icons.edit,
+                              size: 60,
+                              color: Colors.red[400],
+                            ),
+                            SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    "Matematika",                          
+                                    style: TextStyle(fontSize: 15)
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    "Bab 1 - Algoritma Dasar",                          
+                                    style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold)
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    "Terakhir dibuka pada, Senin 8 Juni 2020",                             
+                                    style: TextStyle(fontSize: 10, color: Colors.grey)
+                                  ),
+                                ],
+                              )
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     SizedBox(height: 15),
-                    Container(
-                      padding: EdgeInsets.all(10),
-                      decoration  : new BoxDecoration(
-                        borderRadius:  BorderRadius.circular(10),
-                        border: Border.all(color: Colors.grey[350])
-                      ),  
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Icon(
-                            Icons.collections_bookmark,
-                            size: 60,
-                            color: Colors.red[400],
-                          ),
-                          SizedBox(width: 10),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text(
-                                  "Matematika",                          
-                                  style: TextStyle(fontSize: 15)
-                                ),
-                                SizedBox(height: 5),
-                                Text(
-                                  "Bab 1 - Algoritma Dasar",                          
-                                  style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold)
-                                ),
-                                SizedBox(height: 5),
-                                Text(
-                                  "Terakhir dibuka pada, Senin 8 Juni 2020",                           
-                                  style: TextStyle(fontSize: 10, color: Colors.grey)
-                                ),
-                              ],
-                            )
-                          ),
-                        ],
+                    GestureDetector(
+                      onTap: () {
+                        _showMyDialog('Matematika');
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        decoration  : new BoxDecoration(
+                          borderRadius:  BorderRadius.circular(10),
+                          border: Border.all(color: Colors.grey[350])
+                        ),  
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Icon(
+                              Icons.collections_bookmark,
+                              size: 60,
+                              color: Colors.red[400],
+                            ),
+                            SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    "Matematika",                          
+                                    style: TextStyle(fontSize: 15)
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    "Bab 1 - Algoritma Dasar",                          
+                                    style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold)
+                                  ),
+                                  SizedBox(height: 5),
+                                  Text(
+                                    "Terakhir dibuka pada, Senin 8 Juni 2020",                           
+                                    style: TextStyle(fontSize: 10, color: Colors.grey)
+                                  ),
+                                ],
+                              )
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     SizedBox(height: 15),
@@ -547,28 +819,56 @@ class _MyHomePageState extends State<MyHomePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Expanded(
-                      child: Container(
-                        alignment: Alignment.center,
-                        child: Text(
-                          "Hasil Belajarmu",                          
-                          style: TextStyle(fontSize: 20),
+                      child: GestureDetector(
+                        onTap: (){
+                          this.setState(() {
+                            _menuTab= 0;
+                          });
+                        },
+                        child: Container(
+                          padding: EdgeInsets.only(bottom: 10),
+                          alignment: Alignment.topCenter,
+                          decoration: BoxDecoration(
+                            border: (_menuTab == 0
+                              ? Border(
+                                bottom: BorderSide(
+                                  color: Color(0xFF5465ab),
+                                  width: 6,
+                                ),
+                              ) : null
+                            )
+                          ),
+                          child: Text(
+                            "Hasil Pencapaianmu",                          
+                            style: TextStyle(fontSize: 18),
+                          ),
                         ),
                       )
                     ),
                     Expanded(
-                      child: Container(
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: Color(0xFF5465ab),
-                              width: 6,
-                            ),
-                          )
-                        ),
-                        child: Text(
-                          "Hasil Pencapaianmu",                          
-                          style: TextStyle(fontSize: 20),
+                      child: GestureDetector(
+                        onTap: (){
+                          this.setState(() {
+                            _menuTab= 1;
+                          });
+                        },
+                        child: Container(
+                          padding: EdgeInsets.only(bottom: 10),
+                          alignment: Alignment.topCenter,
+                          decoration: BoxDecoration(
+                            border: (_menuTab == 1
+                              ? Border(
+                                bottom: BorderSide(
+                                  color: Color(0xFF5465ab),
+                                  width: 6,
+                                ),
+                              ) : null
+                            )
+                          ),
+                          child: Text(
+                            "Hasil Pencapaianmu",                          
+                            style: TextStyle(fontSize: 18),
+                          ),
                         ),
                       )
                     )
@@ -582,145 +882,217 @@ class _MyHomePageState extends State<MyHomePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Expanded(
-                      child: Container(
-                        padding: EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: Color(0xFF5465ab),
-                              width: 6,
-                            ),
-                          )
-                        ),
-                        child: Column(
-                          children: <Widget>[
-                            Container(
-                              padding: EdgeInsets.all(15),
-                              decoration: new BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Color(0xFF6f6f6f),
+                      child: GestureDetector(
+                        onTap: () {
+                          this.setState(() {
+                            _childTab = 0;
+                          });
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                            border: (_childTab == 0 ?
+                              Border(
+                                bottom: BorderSide(
+                                  color: Color(0xFF5465ab),
+                                  width: 6,
+                                ),
+                              ) : null)
+                          ),
+                          child: Column(
+                            children: <Widget>[
+                              Container(
+                                padding: EdgeInsets.all(15),
+                                decoration: new BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Color(0xFF6f6f6f),
+                                ),
+                                alignment: Alignment.center,
+                                child: Icon(
+                                  Icons.looks_one,
+                                  size: 30,
+                                  color: Colors.white,
+                                ),
                               ),
-                              alignment: Alignment.center,
-                              child: Icon(
-                                Icons.looks_one,
-                                size: 30,
-                                color: Colors.white,
+                              SizedBox(height: 5),
+                              Text(
+                                "Semua",                          
+                                style: TextStyle(fontSize: 10, fontWeight: _childTab == 0? FontWeight.bold : null),
                               ),
-                            ),
-                            SizedBox(height: 5),
-                            Text(
-                              "Semua",                          
-                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                      )
-                    ),
-                    Expanded(
-                      child: Container(
-                        padding: EdgeInsets.all(5),
-                        child: Column(
-                          children: <Widget>[
-                            Container(
-                              padding: EdgeInsets.all(15),
-                              decoration: new BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Color(0xFFee4345),
-                              ),
-                              alignment: Alignment.center,
-                              child: Icon(
-                                Icons.looks_one,
-                                size: 30,
-                                color: Colors.white,
-                              ),
-                            ),
-                            SizedBox(height: 5),
-                            Text(
-                              "Matematika",                          
-                              style: TextStyle(fontSize: 10),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       )
                     ),
                     Expanded(
-                      child: Container(
-                        padding: EdgeInsets.all(5),
-                        child: Column(
-                          children: <Widget>[
-                            Container(
-                              padding: EdgeInsets.all(15),
-                              decoration: new BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Color(0xFF57a0d4),
+                      child: GestureDetector(
+                        onTap: () {
+                          this.setState(() {
+                            _childTab = 1;
+                          });
+                        },
+                        child: Container(
+                          decoration: new BoxDecoration(
+                            border: (_childTab == 1 ?
+                              Border(
+                                bottom: BorderSide(
+                                  color: Color(0xFF5465ab),
+                                  width: 6,
+                                ),
+                              ) : null)
+                          ),
+                          padding: EdgeInsets.all(5),
+                          child: Column(
+                            children: <Widget>[
+                              Container(
+                                padding: EdgeInsets.all(15),
+                                decoration: new BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Color(0xFFee4345),
+                                ),
+                                alignment: Alignment.center,
+                                child: Icon(
+                                  Icons.looks_one,
+                                  size: 30,
+                                  color: Colors.white,
+                                ),
                               ),
-                              alignment: Alignment.center,
-                              child: Icon(
-                                Icons.looks_one,
-                                size: 30,
-                                color: Colors.white,
+                              SizedBox(height: 5),
+                              Text(
+                                "Matematika",                          
+                                style: TextStyle(fontSize: 10, fontWeight: _childTab == 1? FontWeight.bold : null),
                               ),
-                            ),
-                            SizedBox(height: 5),
-                            Text(
-                              "Fisika",                          
-                              style: TextStyle(fontSize: 15),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       )
                     ),
                     Expanded(
-                      child: Container(
-                        padding: EdgeInsets.all(5),
-                        child: Column(
-                          children: <Widget>[
-                            Container(
-                              padding: EdgeInsets.all(15),
-                              decoration: new BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Color(0xFFffc203),
+                      child: GestureDetector(
+                        onTap: () {
+                          this.setState(() {
+                            _childTab = 2;
+                          });
+                        },
+                        child: Container(
+                          decoration: new BoxDecoration(
+                            border: (_childTab == 2 ?
+                              Border(
+                                bottom: BorderSide(
+                                  color: Color(0xFF5465ab),
+                                  width: 6,
+                                ),
+                              ) : null)
+                          ),
+                          padding: EdgeInsets.all(5),
+                          child: Column(
+                            children: <Widget>[
+                              Container(
+                                padding: EdgeInsets.all(15),
+                                decoration: new BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Color(0xFF57a0d4),
+                                ),
+                                alignment: Alignment.center,
+                                child: Icon(
+                                  Icons.looks_one,
+                                  size: 30,
+                                  color: Colors.white,
+                                ),
                               ),
-                              alignment: Alignment.center,
-                              child: Icon(
-                                Icons.looks_one,
-                                size: 30,
-                                color: Colors.white,
+                              SizedBox(height: 5),
+                              Text(
+                                "Fisika",                       
+                                style: TextStyle(fontSize: 10, fontWeight: _childTab == 2? FontWeight.bold : null),
                               ),
-                            ),
-                            SizedBox(height: 5),
-                            Text(
-                              "Kimia",                          
-                              style: TextStyle(fontSize: 15),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       )
                     ),
                     Expanded(
-                      child: Container(
-                        padding: EdgeInsets.all(5),
-                        child: Column(
-                          children: <Widget>[
-                            Container(
-                              padding: EdgeInsets.all(15),
-                              decoration: new BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Color(0xFF34bfb6),
+                      child: GestureDetector(
+                        onTap: () {
+                          this.setState(() {
+                            _childTab = 3;
+                          });
+                        },
+                        child: Container(
+                          decoration: new BoxDecoration(
+                            border: (_childTab == 3 ?
+                              Border(
+                                bottom: BorderSide(
+                                  color: Color(0xFF5465ab),
+                                  width: 6,
+                                ),
+                              ) : null)
+                          ),
+                          padding: EdgeInsets.all(5),
+                          child: Column(
+                            children: <Widget>[
+                              Container(
+                                padding: EdgeInsets.all(15),
+                                decoration: new BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Color(0xFFffc203),
+                                ),
+                                alignment: Alignment.center,
+                                child: Icon(
+                                  Icons.looks_one,
+                                  size: 30,
+                                  color: Colors.white,
+                                ),
                               ),
-                              alignment: Alignment.center,
-                              child: Icon(
-                                Icons.looks_one,
-                                size: 30,
-                                color: Colors.white,
+                              SizedBox(height: 5),
+                              Text(
+                                "Kimia",                          
+                                style: TextStyle(fontSize: 10, fontWeight: _childTab == 3? FontWeight.bold : null),
                               ),
-                            ),
-                            SizedBox(height: 5),
-                            Text(
-                              "Biologi",                          
-                              style: TextStyle(fontSize: 15),
-                            ),
-                          ],
+                            ],
+                          ),
+                        ),
+                      )
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          this.setState(() {
+                            _childTab = 4;
+                          });
+                        },
+                        child: Container(
+                          decoration: new BoxDecoration(
+                            border: (_childTab == 4 ?
+                              Border(
+                                bottom: BorderSide(
+                                  color: Color(0xFF5465ab),
+                                  width: 6,
+                                ),
+                              ) : null)
+                          ),
+                          padding: EdgeInsets.all(5),
+                          child: Column(
+                            children: <Widget>[
+                              Container(
+                                padding: EdgeInsets.all(15),
+                                decoration: new BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Color(0xFF34bfb6),
+                                ),
+                                alignment: Alignment.center,
+                                child: Icon(
+                                  Icons.looks_one,
+                                  size: 30,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              SizedBox(height: 5),
+                              Text(
+                                "Biologi",                        
+                                style: TextStyle(fontSize: 10, fontWeight: _childTab == 4? FontWeight.bold : null),
+                              ),
+                            ],
+                          ),
                         ),
                       )
                     ),
